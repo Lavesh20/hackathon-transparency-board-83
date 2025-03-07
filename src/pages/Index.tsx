@@ -4,16 +4,15 @@ import { Link } from 'react-router-dom';
 import { ROUNDS, TEAMS, getLeaderboardByRound } from '@/utils/teamData';
 import Navbar from '@/components/Navbar';
 import RoundTabs from '@/components/RoundTabs';
-import Leaderboard from '@/components/Leaderboard';
-import TeamCard from '@/components/TeamCard';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Trophy } from 'lucide-react';
+import AnimatedNumber from '@/components/AnimatedNumber';
 
 const Index = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   
-  // Get top teams for the leaderboard
-  const topTeams = getLeaderboardByRound(activeRound).slice(0, 3);
+  // Get teams for the leaderboard
+  const leaderboard = getLeaderboardByRound(activeRound);
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,29 +43,107 @@ const Index = () => {
         </section>
         
         {/* Rounds and Leaderboard */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
-          <div className="lg:col-span-1 space-y-6">
-            <div className="flex items-center space-x-2">
-              <Trophy className="h-5 w-5 text-primary" />
-              <h2 className="text-2xl font-bold">Leaderboard</h2>
+        <section className="mb-16">
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Trophy className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-bold">Leaderboard</h2>
+              </div>
+              <RoundTabs activeRound={activeRound} onRoundChange={setActiveRound} />
             </div>
-            <RoundTabs activeRound={activeRound} onRoundChange={setActiveRound} />
-            <Leaderboard round={activeRound} />
-            <div className="text-center pt-2">
-              <Button variant="link" asChild size="sm">
-                <Link to="/teams" className="text-sm">
-                  View All Teams
-                </Link>
-              </Button>
-            </div>
-          </div>
-          
-          <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold mb-6">Top Projects</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {topTeams.map(team => (
-                <TeamCard key={team.id} team={team} roundFilter={activeRound} />
-              ))}
+            
+            <div className="rounded-lg border overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted/50 border-b">
+                      <th className="text-left font-medium py-3 px-4 w-12">Rank</th>
+                      <th className="text-left font-medium py-3 px-4">Team</th>
+                      <th className="text-center font-medium py-3 px-4">Feasibility</th>
+                      <th className="text-center font-medium py-3 px-4">Originality</th>
+                      <th className="text-center font-medium py-3 px-4">Completeness</th>
+                      <th className="text-center font-medium py-3 px-4">Functionality</th>
+                      <th className="text-center font-medium py-3 px-4">Presentation</th>
+                      <th className="text-center font-medium py-3 px-4">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {leaderboard.map((team, index) => {
+                      const roundScores = team.scores.filter(score => score.round === activeRound);
+                      const hasScoreForRound = roundScores.length > 0;
+                      
+                      // Calculate average scores for each category
+                      const categoryScores = hasScoreForRound
+                        ? team.scores[0].categories.map(cat => {
+                            const scores = roundScores.map(score => 
+                              score.categories.find(c => c.name === cat.name)?.score || 0
+                            );
+                            return {
+                              name: cat.name,
+                              average: Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+                            };
+                          })
+                        : [];
+                        
+                      // Calculate total average score
+                      const totalScore = hasScoreForRound
+                        ? Math.round(roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length)
+                        : 0;
+                      
+                      const rowClass = index % 2 === 0 ? 'bg-background' : 'bg-muted/20';
+                      const rankClass = index < 3 ? 'font-bold' : '';
+                      
+                      return (
+                        <tr key={team.id} className={`${rowClass} hover:bg-muted/30 transition-colors`}>
+                          <td className={`py-3 px-4 ${rankClass}`}>
+                            {index < 3 ? (
+                              <div className="flex items-center justify-center rounded-full w-6 h-6 text-xs bg-primary/10 text-primary">
+                                {index + 1}
+                              </div>
+                            ) : (
+                              <span>{index + 1}</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
+                            <Link to={`/teams/${team.id}`} className="hover:underline">
+                              <div>
+                                <div className="font-medium">{team.name}</div>
+                                <div className="text-xs text-muted-foreground">{team.projectName}</div>
+                              </div>
+                            </Link>
+                          </td>
+                          {hasScoreForRound ? (
+                            categoryScores.map(cat => (
+                              <td key={cat.name} className="py-3 px-4 text-center">
+                                <AnimatedNumber value={cat.average} className="font-medium" />
+                              </td>
+                            ))
+                          ) : (
+                            <>
+                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                            </>
+                          )}
+                          <td className="py-3 px-4 text-center">
+                            {hasScoreForRound ? (
+                              <div className="font-bold">
+                                <AnimatedNumber value={totalScore} />
+                                <span className="text-xs text-muted-foreground font-normal">/100</span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </section>

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
 interface AnimatedNumberProps {
@@ -8,12 +8,15 @@ interface AnimatedNumberProps {
   className?: string;
 }
 
-const AnimatedNumber = ({ value, duration = 1000, className }: AnimatedNumberProps) => {
+const AnimatedNumber = ({ value, duration = 800, className }: AnimatedNumberProps) => {
   const [displayValue, setDisplayValue] = useState(0);
+  const previousValueRef = useRef(0);
   
   useEffect(() => {
+    previousValueRef.current = displayValue;
+    
     let startTime: number | null = null;
-    const startValue = displayValue;
+    const startValue = previousValueRef.current;
     
     const step = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
