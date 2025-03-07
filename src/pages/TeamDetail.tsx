@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ROUNDS } from '@/utils/teamData';
@@ -14,9 +15,14 @@ import { ArrowLeft, Check, Users } from 'lucide-react';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import { useToast } from '@/hooks/use-toast';
 
+interface CategoryAverage {
+  total: number;
+  count: number;
+}
+
 const TeamDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [team, setTeam] = useState(null);
+  const [team, setTeam] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   const [activeTab, setActiveTab] = useState('scores');
@@ -80,13 +86,13 @@ const TeamDetail = () => {
     );
   }
   
-  const roundScores = team.scores.filter(score => score.round === activeRound);
-  const roundFeedback = team.feedback.filter(feedback => feedback.round === activeRound);
+  const roundScores = team.scores.filter((score: any) => score.round === activeRound);
+  const roundFeedback = team.feedback.filter((feedback: any) => feedback.round === activeRound);
   
-  const categoryAverages = team.scores
-    .filter(score => score.round === activeRound)
-    .reduce((acc, score) => {
-      score.categories.forEach(category => {
+  const categoryAverages: Record<string, CategoryAverage> = team.scores
+    .filter((score: any) => score.round === activeRound)
+    .reduce((acc: Record<string, CategoryAverage>, score: any) => {
+      score.categories.forEach((category: any) => {
         if (!acc[category.name]) {
           acc[category.name] = { total: 0, count: 0 };
         }
@@ -97,10 +103,10 @@ const TeamDetail = () => {
     }, {});
   
   const roundAverageScore = roundScores.length
-    ? Math.round(roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length)
+    ? Math.round(roundScores.reduce((sum: number, score: any) => sum + score.totalScore, 0) / roundScores.length)
     : 0;
   
-  const getInitials = (name) => {
+  const getInitials = (name: string) => {
     return name
       .split(' ')
       .map(part => part[0])
@@ -146,7 +152,7 @@ const TeamDetail = () => {
           </div>
           
           <div className="flex flex-wrap gap-3">
-            {team.members.map(member => (
+            {team.members.map((member: any) => (
               <div 
                 key={member.id} 
                 className="flex items-center gap-2 bg-secondary/50 rounded-full pl-1 pr-3 py-1"
@@ -177,7 +183,7 @@ const TeamDetail = () => {
             <TabsContent value="scores" className="mt-6">
               {roundScores.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {roundScores.map((score, index) => (
+                  {roundScores.map((score: any, index: number) => (
                     <ScoreCard key={index} score={score} />
                   ))}
                 </div>
@@ -191,7 +197,7 @@ const TeamDetail = () => {
             <TabsContent value="feedback" className="mt-6">
               {roundFeedback.length > 0 ? (
                 <div className="space-y-4">
-                  {roundFeedback.map((feedback, index) => (
+                  {roundFeedback.map((feedback: any, index: number) => (
                     <FeedbackCard key={index} feedback={feedback} />
                   ))}
                 </div>

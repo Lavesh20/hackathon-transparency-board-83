@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUNDS, SCORE_CATEGORIES } from '@/utils/teamData';
@@ -18,11 +19,11 @@ import { useToast } from '@/hooks/use-toast';
 const JudgePanel = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   const [selectedTeam, setSelectedTeam] = useState('');
-  const [scores, setScores] = useState({});
+  const [scores, setScores] = useState<Record<string, number>>({});
   const [feedback, setFeedback] = useState('');
   const [judgeName, setJudgeName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [teams, setTeams] = useState([]);
+  const [teams, setTeams] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
@@ -47,9 +48,9 @@ const JudgePanel = () => {
     getTeams();
   }, [toast]);
   
-  const handleTeamChange = (teamId) => {
+  const handleTeamChange = (teamId: string) => {
     setSelectedTeam(teamId);
-    const initialScores = SCORE_CATEGORIES.reduce((acc, category) => {
+    const initialScores = SCORE_CATEGORIES.reduce<Record<string, number>>((acc, category) => {
       acc[category.name] = Math.floor(category.maxScore / 2);
       return acc;
     }, {});
@@ -57,7 +58,7 @@ const JudgePanel = () => {
     setFeedback('');
   };
   
-  const handleScoreChange = (category, value) => {
+  const handleScoreChange = (category: string, value: number[]) => {
     setScores(prev => ({
       ...prev,
       [category]: value[0]
@@ -66,7 +67,7 @@ const JudgePanel = () => {
   
   const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
   
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!selectedTeam || !judgeName) {
@@ -123,7 +124,7 @@ const JudgePanel = () => {
       setSelectedTeam('');
       setFeedback('');
       
-      const initialScores = SCORE_CATEGORIES.reduce((acc, category) => {
+      const initialScores = SCORE_CATEGORIES.reduce<Record<string, number>>((acc, category) => {
         acc[category.name] = Math.floor(category.maxScore / 2);
         return acc;
       }, {});
@@ -142,7 +143,7 @@ const JudgePanel = () => {
   
   const team = teams.find(t => t.id === selectedTeam);
   
-  const getInitials = (name) => {
+  const getInitials = (name: string) => {
     return name
       .split(' ')
       .map(part => part[0])

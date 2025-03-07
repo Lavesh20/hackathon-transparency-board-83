@@ -24,9 +24,13 @@ export const fetchTeamById = async (id: string): Promise<Team> => {
   }
 };
 
-export const addScore = async (teamId: string, score: TeamScore): Promise<Team> => {
+export const addScore = async (teamId: string, score: Omit<TeamScore, 'teamId'>): Promise<Team> => {
   try {
-    const response = await axios.post(`${API_URL}/teams/${teamId}/scores`, score);
+    const scoreWithTeamId = {
+      ...score,
+      teamId
+    };
+    const response = await axios.post(`${API_URL}/teams/${teamId}/scores`, scoreWithTeamId);
     return response.data;
   } catch (error) {
     console.error('Error adding score:', error);
@@ -34,9 +38,13 @@ export const addScore = async (teamId: string, score: TeamScore): Promise<Team> 
   }
 };
 
-export const addFeedback = async (teamId: string, feedback: JudgeFeedback): Promise<Team> => {
+export const addFeedback = async (teamId: string, feedback: Omit<JudgeFeedback, 'teamId'>): Promise<Team> => {
   try {
-    const response = await axios.post(`${API_URL}/teams/${teamId}/feedback`, feedback);
+    const feedbackWithTeamId = {
+      ...feedback,
+      teamId
+    };
+    const response = await axios.post(`${API_URL}/teams/${teamId}/feedback`, feedbackWithTeamId);
     return response.data;
   } catch (error) {
     console.error('Error adding feedback:', error);
