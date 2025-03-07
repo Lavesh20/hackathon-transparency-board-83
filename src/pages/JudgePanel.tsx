@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUNDS, SCORE_CATEGORIES } from '@/utils/teamData';
@@ -26,18 +25,19 @@ const JudgePanel = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   
-  // Fetch teams using React Query with correct error handling
   const { data: teams = [], isLoading: loading } = useQuery({
     queryKey: ['teams'],
-    queryFn: fetchTeams,
-    onSettled: (data, error) => {
-      if (error) {
+    queryFn: async () => {
+      try {
+        return await fetchTeams();
+      } catch (error) {
         console.error('Failed to fetch teams:', error);
         toast({
           title: 'Error',
           description: 'Failed to load teams data. Using fallback data.',
           variant: 'destructive',
         });
+        throw error;
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes

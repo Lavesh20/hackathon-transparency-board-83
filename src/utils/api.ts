@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 import { Team, TeamScore, JudgeFeedback } from './teamData';
 import { MOCK_TEAMS } from './mockData';

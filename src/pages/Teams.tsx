@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ROUNDS } from '@/utils/teamData';
 import { fetchTeams } from '@/utils/api';
@@ -19,28 +18,27 @@ const Teams = () => {
   const [filteredTeams, setFilteredTeams] = useState([]);
   const { toast } = useToast();
   
-  // Fetch teams using React Query with correct error handling
   const { data: teams = [], isLoading: loading } = useQuery({
     queryKey: ['teams'],
-    queryFn: fetchTeams,
-    onSettled: (data, error) => {
-      if (error) {
+    queryFn: async () => {
+      try {
+        return await fetchTeams();
+      } catch (error) {
         console.error('Failed to fetch teams:', error);
         toast({
           title: 'Error',
           description: 'Failed to load teams data. Using fallback data.',
           variant: 'destructive',
         });
+        throw error;
       }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
-  // Update teams based on filters and sorting
   useEffect(() => {
     let filtered = [...teams];
     
-    // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(team => 
@@ -51,12 +49,11 @@ const Teams = () => {
       );
     }
     
-    // Apply sorting
     if (sortBy === 'score') {
       filtered = [...filtered].sort((a, b) => {
         const aScore = getCumulativeScore(a, activeRound);
         const bScore = getCumulativeScore(b, activeRound);
-        return bScore - aScore; // Sort by score (descending)
+        return bScore - aScore;
       });
     } else if (sortBy === 'name') {
       filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
@@ -67,7 +64,6 @@ const Teams = () => {
     setFilteredTeams(filtered);
   }, [searchQuery, sortBy, activeRound, teams]);
 
-  // Get cumulative score up to current round
   const getCumulativeScore = (team, currentRound) => {
     const roundIndex = ROUNDS.indexOf(currentRound);
     let totalScore = 0;
@@ -92,12 +88,10 @@ const Teams = () => {
       <main className="container px-4 md:px-6 pt-24 pb-16">
         <h1 className="text-3xl font-bold mb-6">Teams</h1>
         
-        {/* Round selection */}
         <div className="mb-8">
           <RoundTabs activeRound={activeRound} onRoundChange={setActiveRound} />
         </div>
         
-        {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -126,7 +120,6 @@ const Teams = () => {
           </div>
         </div>
         
-        {/* Team list view */}
         {loading ? (
           <div className="animate-pulse">
             <div className="h-12 bg-muted rounded-lg mb-2"></div>
@@ -156,7 +149,6 @@ const Teams = () => {
                     const roundScores = team.scores.filter(score => score.round === activeRound);
                     const hasScoreForRound = roundScores.length > 0;
                     
-                    // Calculate average scores for each category
                     const categoryScores = hasScoreForRound
                       ? team.scores[0].categories.map(cat => {
                           const scores = roundScores.map(score => 
@@ -168,16 +160,13 @@ const Teams = () => {
                           };
                         })
                       : [];
-                      
-                    // Calculate total average score for this round
+                    
                     const roundScore = hasScoreForRound
                       ? Math.round(roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length)
                       : 0;
                     
-                    // Calculate cumulative score up to this round
                     const cumulativeScore = getCumulativeScore(team, activeRound);
                     
-                    // Calculate max possible score based on rounds completed
                     const roundIndex = ROUNDS.indexOf(activeRound);
                     const maxPossibleScore = (roundIndex + 1) * 100;
                     
