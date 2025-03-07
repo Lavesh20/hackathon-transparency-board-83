@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUNDS } from '@/utils/teamData';
@@ -14,6 +13,24 @@ import { useQuery } from '@tanstack/react-query';
 const Index = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   const { toast } = useToast();
+  
+  // Get cumulative score up to current round
+  const getCumulativeScore = (team, currentRound) => {
+    const roundIndex = ROUNDS.indexOf(currentRound);
+    let totalScore = 0;
+    
+    for (let i = 0; i <= roundIndex; i++) {
+      const roundScores = team.scores.filter(score => score.round === ROUNDS[i]);
+      if (roundScores.length > 0) {
+        const roundAverage = Math.round(
+          roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length
+        );
+        totalScore += roundAverage;
+      }
+    }
+    
+    return totalScore;
+  };
   
   // Fetch teams data using React Query
   const { data: teams = [], isLoading } = useQuery({
@@ -44,24 +61,6 @@ const Index = () => {
   };
   
   const leaderboard = getLeaderboard();
-
-  // Get cumulative score up to current round
-  const getCumulativeScore = (team, currentRound) => {
-    const roundIndex = ROUNDS.indexOf(currentRound);
-    let totalScore = 0;
-    
-    for (let i = 0; i <= roundIndex; i++) {
-      const roundScores = team.scores.filter(score => score.round === ROUNDS[i]);
-      if (roundScores.length > 0) {
-        const roundAverage = Math.round(
-          roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length
-        );
-        totalScore += roundAverage;
-      }
-    }
-    
-    return totalScore;
-  };
 
   return (
     <div className="min-h-screen bg-background">
