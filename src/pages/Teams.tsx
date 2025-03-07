@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ROUNDS } from '@/utils/teamData';
 import { fetchTeams } from '@/utils/api';
@@ -10,42 +9,32 @@ import { Search, SlidersHorizontal } from 'lucide-react';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
 
 const Teams = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('score');
-  const [teams, setTeams] = useState([]);
   const [filteredTeams, setFilteredTeams] = useState([]);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  // Fetch teams from API
-  useEffect(() => {
-    const getTeams = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchTeams();
-        setTeams(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch teams:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load teams data. Please try again.',
-          variant: 'destructive',
-        });
-        setLoading(false);
-      }
-    };
-    
-    getTeams();
-  }, [toast]);
+  // Fetch teams using React Query
+  const { data: teams = [], isLoading: loading } = useQuery({
+    queryKey: ['teams'],
+    queryFn: fetchTeams,
+    onError: (error) => {
+      console.error('Failed to fetch teams:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load teams data. Please try again.',
+        variant: 'destructive',
+      });
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
   
   // Update teams based on filters and sorting
   useEffect(() => {
-    setLoading(true);
-    
     let filtered = [...teams];
     
     // Apply search filter
@@ -72,10 +61,7 @@ const Teams = () => {
       filtered = [...filtered].sort((a, b) => a.projectName.localeCompare(b.projectName));
     }
     
-    setTimeout(() => {
-      setFilteredTeams(filtered);
-      setLoading(false);
-    }, 300);
+    setFilteredTeams(filtered);
   }, [searchQuery, sortBy, activeRound, teams]);
 
   // Get cumulative score up to current round

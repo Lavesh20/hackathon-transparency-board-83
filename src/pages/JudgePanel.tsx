@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUNDS, SCORE_CATEGORIES } from '@/utils/teamData';
@@ -15,6 +14,7 @@ import { Slider } from '@/components/ui/slider';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Check, ArrowLeft, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
 
 const JudgePanel = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
@@ -23,30 +23,21 @@ const JudgePanel = () => {
   const [feedback, setFeedback] = useState('');
   const [judgeName, setJudgeName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [teams, setTeams] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  useEffect(() => {
-    const getTeams = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchTeams();
-        setTeams(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Failed to fetch teams:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load teams data. Please try again.',
-          variant: 'destructive',
-        });
-        setLoading(false);
-      }
-    };
-    
-    getTeams();
-  }, [toast]);
+  const { data: teams = [], isLoading: loading } = useQuery({
+    queryKey: ['teams'],
+    queryFn: fetchTeams,
+    onError: (error) => {
+      console.error('Failed to fetch teams:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load teams data. Please try again.',
+        variant: 'destructive',
+      });
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
   
   const handleTeamChange = (teamId: string) => {
     setSelectedTeam(teamId);
@@ -91,11 +82,10 @@ const JudgePanel = () => {
     setIsSubmitting(true);
     
     try {
-      // Generate a unique judgeId using timestamp and random string
       const judgeId = `judge_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       
       const scoreData = {
-        judgeId, // Add the judgeId here
+        judgeId,
         judgeName,
         round: activeRound,
         categories: SCORE_CATEGORIES.map(category => ({
@@ -111,7 +101,7 @@ const JudgePanel = () => {
       
       if (feedback.trim()) {
         const feedbackData = {
-          judgeId, // Use the same judgeId for consistency
+          judgeId,
           judgeName,
           round: activeRound,
           comment: feedback,
@@ -264,7 +254,16 @@ const JudgePanel = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {selectedTeam ? (
+                {loading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-pulse space-y-4">
+                      <div className="h-6 bg-muted rounded w-3/4 mx-auto"></div>
+                      <div className="h-24 bg-muted rounded"></div>
+                      <div className="h-24 bg-muted rounded"></div>
+                      <div className="h-24 bg-muted rounded"></div>
+                    </div>
+                  </div>
+                ) : selectedTeam ? (
                   <form onSubmit={handleSubmit} className="space-y-8">
                     {SCORE_CATEGORIES.map(category => (
                       <div key={category.name} className="space-y-4">
