@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { ROUNDS } from '@/utils/teamData';
 import { fetchTeams } from '@/utils/api';
@@ -18,17 +19,19 @@ const Teams = () => {
   const [filteredTeams, setFilteredTeams] = useState([]);
   const { toast } = useToast();
   
-  // Fetch teams using React Query
+  // Fetch teams using React Query with correct error handling
   const { data: teams = [], isLoading: loading } = useQuery({
     queryKey: ['teams'],
     queryFn: fetchTeams,
-    onError: (error) => {
-      console.error('Failed to fetch teams:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load teams data. Please try again.',
-        variant: 'destructive',
-      });
+    onSettled: (data, error) => {
+      if (error) {
+        console.error('Failed to fetch teams:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load teams data. Using fallback data.',
+          variant: 'destructive',
+        });
+      }
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
