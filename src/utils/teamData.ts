@@ -1,3 +1,4 @@
+
 export interface TeamMember {
   id: string;
   name: string;
@@ -106,6 +107,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '1',
         round: 'Mentor Round 1',
         comment: 'The idea is innovative and addresses a real need. Work on improving the data visualization to make the impact more apparent to users.',
         timestamp: '2023-11-15T10:35:00Z'
@@ -113,6 +115,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j2',
         judgeName: 'Prof. James Wilson',
+        teamId: '1',
         round: 'Mentor Round 2',
         comment: 'Excellent progress! Your implementation of the suggested changes has greatly improved the user experience. Consider adding more gamification elements to increase engagement.',
         timestamp: '2023-11-16T14:25:00Z'
@@ -168,6 +171,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '2',
         round: 'Mentor Round 1',
         comment: 'Your approach to health data is innovative. Focus on completing the core functionality before adding additional features.',
         timestamp: '2023-11-15T11:50:00Z'
@@ -175,6 +179,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j2',
         judgeName: 'Prof. James Wilson',
+        teamId: '2',
         round: 'Mentor Round 2',
         comment: 'The algorithm for health recommendations is quite sophisticated. Consider adding more user customization options and improve the mobile responsiveness.',
         timestamp: '2023-11-16T15:35:00Z'
@@ -230,6 +235,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '3',
         round: 'Mentor Round 1',
         comment: 'Your vision for smart city integration is impressive, but try to focus on one or two key aspects first to demonstrate the concept more effectively.',
         timestamp: '2023-11-15T13:20:00Z'
@@ -237,6 +243,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j2',
         judgeName: 'Prof. James Wilson',
+        teamId: '3',
         round: 'Mentor Round 2',
         comment: 'The traffic management module is particularly well-implemented. The UI is intuitive and the backend is handling the complex data processing efficiently.',
         timestamp: '2023-11-16T16:50:00Z'
@@ -292,6 +299,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '4',
         round: 'Mentor Round 1',
         comment: 'The ML algorithms for content adaptation are well-implemented. Consider adding more immediate feedback mechanisms for learners.',
         timestamp: '2023-11-15T14:35:00Z'
@@ -299,6 +307,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j2',
         judgeName: 'Prof. James Wilson',
+        teamId: '4',
         round: 'Mentor Round 2',
         comment: 'The progress tracking and visualization tools are excellent. The platform now provides a comprehensive learning experience with strong feedback loops.',
         timestamp: '2023-11-16T17:20:00Z'
@@ -354,6 +363,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '5',
         round: 'Mentor Round 1',
         comment: 'The UI design is exceptional and the concept is highly feasible. Consider adding more gamification elements to increase user engagement and retention.',
         timestamp: '2023-11-15T15:50:00Z'
@@ -361,6 +371,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j2',
         judgeName: 'Prof. James Wilson',
+        teamId: '5',
         round: 'Mentor Round 2',
         comment: 'The carbon footprint calculator is now much more comprehensive. The community features and challenges add a social dimension that strengthens the app.',
         timestamp: '2023-11-16T18:35:00Z'
@@ -400,6 +411,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '6',
         round: 'Mentor Round 1',
         comment: 'The eldercare focus is noble and much needed. Think more about data privacy concerns and how to make the interface extremely simple for elderly users.',
         timestamp: '2023-11-15T09:35:00Z'
@@ -455,6 +467,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j2',
         judgeName: 'Prof. James Wilson',
+        teamId: '7',
         round: 'Mentor Round 1',
         comment: 'Your approach to agricultural optimization is refreshing. Focus on making the system affordable for small farmers as well.',
         timestamp: '2023-11-15T10:20:00Z'
@@ -462,6 +475,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '7',
         round: 'Mentor Round 2',
         comment: 'The data visualization for crop health is excellent. Consider adding offline functionality for areas with poor internet connectivity.',
         timestamp: '2023-11-16T13:35:00Z'
@@ -501,6 +515,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '8',
         round: 'Mentor Round 1',
         comment: 'The concept addresses a real need for better recycling guidance. Train your AI model on more diverse materials and lighting conditions.',
         timestamp: '2023-11-15T11:05:00Z'
@@ -556,6 +571,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j2',
         judgeName: 'Prof. James Wilson',
+        teamId: '9',
         round: 'Mentor Round 1',
         comment: 'The platform has potential but needs unique features to stand out. Consider focusing on niche communities or specific types of remote workers.',
         timestamp: '2023-11-15T12:20:00Z'
@@ -563,6 +579,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '9',
         round: 'Mentor Round 2',
         comment: 'The addition of skill-sharing and local event integration greatly enhances the value proposition. The UI is also much cleaner now.',
         timestamp: '2023-11-16T14:50:00Z'
@@ -602,6 +619,7 @@ export const TEAMS: Team[] = [
       {
         judgeId: 'j1',
         judgeName: 'Dr. Emily Parker',
+        teamId: '10',
         round: 'Mentor Round 1',
         comment: 'The ocean cleanup concept is ambitious and necessary. Focus on power efficiency and durability in marine environments as your key technical challenges.',
         timestamp: '2023-11-15T13:50:00Z'
