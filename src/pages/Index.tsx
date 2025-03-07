@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUNDS } from '@/utils/teamData';
@@ -20,7 +21,8 @@ const Index = () => {
     let totalScore = 0;
     
     for (let i = 0; i <= roundIndex; i++) {
-      const roundScores = team.scores.filter(score => score.round === ROUNDS[i]);
+      const roundName = ROUNDS[i];
+      const roundScores = team.scores.filter(score => score.round === roundName);
       if (roundScores.length > 0) {
         const roundAverage = Math.round(
           roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length
@@ -284,3 +286,4 @@ const Index = () => {
 };
 
 export default Index;
+
