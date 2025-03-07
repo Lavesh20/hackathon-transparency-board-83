@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ROUNDS } from '@/utils/teamData';
+import { ROUNDS, SCORE_CATEGORIES } from '@/utils/teamData';
 import { fetchTeamById } from '@/utils/api';
 import Navbar from '@/components/Navbar';
 import ScoreCard from '@/components/ScoreCard';
@@ -11,7 +10,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Check, Users } from 'lucide-react';
+import { ArrowLeft, Check, Users, Award } from 'lucide-react';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import { useToast } from '@/hooks/use-toast';
 
@@ -105,6 +104,22 @@ const TeamDetail = () => {
   const roundAverageScore = roundScores.length
     ? Math.round(roundScores.reduce((sum: number, score: any) => sum + score.totalScore, 0) / roundScores.length)
     : 0;
+    
+  const averageCategories = Object.entries(categoryAverages).map(([name, { total, count }]) => ({
+    name,
+    score: Math.round(total / count),
+    maxScore: 20
+  }));
+  
+  const averageScoreCard = roundScores.length > 1 ? {
+    judgeName: `${roundScores.length} Judges (Average)`,
+    round: activeRound,
+    categories: averageCategories,
+    totalScore: roundAverageScore,
+    timestamp: new Date().toISOString(),
+    teamId: team.id,
+    judgeId: 'average'
+  } : null;
   
   const getInitials = (name: string) => {
     return name
@@ -182,10 +197,28 @@ const TeamDetail = () => {
             
             <TabsContent value="scores" className="mt-6">
               {roundScores.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {roundScores.map((score: any, index: number) => (
-                    <ScoreCard key={index} score={score} />
-                  ))}
+                <div className="space-y-8">
+                  {roundScores.length > 1 && averageScoreCard && (
+                    <div className="mb-4">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Award className="h-5 w-5 text-primary" />
+                        <h3 className="text-lg font-medium">Panel Score (Average)</h3>
+                      </div>
+                      <ScoreCard score={averageScoreCard} showAverageIndicator={true} />
+                    </div>
+                  )}
+                  
+                  <div>
+                    <div className="flex items-center gap-2 mb-4">
+                      <Users className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-medium">Individual Judge Scores</h3>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {roundScores.map((score: any, index: number) => (
+                        <ScoreCard key={index} score={score} />
+                      ))}
+                    </div>
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-12 bg-muted/30 rounded-lg">

@@ -2,12 +2,14 @@
 import { TeamScore, ScoreCategory } from '@/utils/teamData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 interface ScoreCardProps {
   score: TeamScore;
+  showAverageIndicator?: boolean;
 }
 
-const ScoreCard = ({ score }: ScoreCardProps) => {
+const ScoreCard = ({ score, showAverageIndicator = false }: ScoreCardProps) => {
   const { judgeName, round, categories, totalScore, timestamp } = score;
   
   const formatDate = (dateString: string) => {
@@ -33,7 +35,14 @@ const ScoreCard = ({ score }: ScoreCardProps) => {
     <Card className="w-full overflow-hidden animate-scale-in">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg font-semibold">{round}</CardTitle>
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-lg font-semibold">{round}</CardTitle>
+            {showAverageIndicator && (
+              <Badge variant="outline" className="text-xs bg-primary/10">
+                Average Score
+              </Badge>
+            )}
+          </div>
           <div className="text-right">
             <span className="text-2xl font-bold">{totalScore}</span>
             <span className="text-sm text-muted-foreground">/100</span>

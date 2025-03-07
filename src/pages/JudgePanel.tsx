@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ROUNDS, SCORE_CATEGORIES } from '@/utils/teamData';
@@ -12,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Check, ArrowLeft, Save } from 'lucide-react';
+import { Check, ArrowLeft, Save, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
 
@@ -117,7 +118,7 @@ const JudgePanel = () => {
       
       toast({
         title: "Scores submitted successfully",
-        description: `Your evaluation for the selected team has been recorded.`,
+        description: `Your evaluation for the selected team has been recorded as part of the judging panel.`,
       });
       
       setSelectedTeam('');
@@ -141,6 +142,19 @@ const JudgePanel = () => {
   };
   
   const team = teams.find(t => t.id === selectedTeam);
+  
+  // Get existing judge count for this team and round
+  const getExistingJudgeCount = (teamId: string) => {
+    if (!teamId) return 0;
+    
+    const team = teams.find(t => t.id === teamId);
+    if (!team) return 0;
+    
+    const roundScores = team.scores.filter(score => score.round === activeRound);
+    return roundScores.length;
+  };
+  
+  const existingJudgeCount = getExistingJudgeCount(selectedTeam);
   
   const getInitials = (name: string) => {
     return name
@@ -203,6 +217,15 @@ const JudgePanel = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {selectedTeam && existingJudgeCount > 0 && (
+                    <div className="bg-secondary/30 rounded-lg p-3 flex items-center gap-2 text-sm">
+                      <Users className="h-4 w-4 text-primary" />
+                      <span>
+                        This team already has {existingJudgeCount} judge{existingJudgeCount > 1 ? 's' : ''} for {activeRound}
+                      </span>
+                    </div>
+                  )}
                 </form>
               </CardContent>
             </Card>

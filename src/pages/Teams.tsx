@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { ROUNDS } from '@/utils/teamData';
 import { fetchTeams } from '@/utils/api';
@@ -5,11 +6,12 @@ import Navbar from '@/components/Navbar';
 import RoundTabs from '@/components/RoundTabs';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal, Users } from 'lucide-react';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import { Link } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery } from '@tanstack/react-query';
+import { Badge } from '@/components/ui/badge';
 
 const Teams = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
@@ -209,9 +211,17 @@ const Teams = () => {
                         )}
                         <td className="py-3 px-4 text-center">
                           {hasScoreForRound ? (
-                            <div className="font-medium">
-                              <AnimatedNumber value={roundScore} />
-                              <span className="text-xs text-muted-foreground">/100</span>
+                            <div className="flex flex-col items-center">
+                              <div className="font-medium">
+                                <AnimatedNumber value={roundScore} />
+                                <span className="text-xs text-muted-foreground">/100</span>
+                              </div>
+                              {roundScores.length > 1 && (
+                                <div className="flex items-center mt-1 text-xs text-muted-foreground">
+                                  <Users className="h-3 w-3 mr-1" />
+                                  <span>{roundScores.length} judges</span>
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <span className="text-muted-foreground">-</span>
