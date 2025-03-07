@@ -91,7 +91,11 @@ const JudgePanel = () => {
     setIsSubmitting(true);
     
     try {
+      // Generate a unique judgeId using timestamp and random string
+      const judgeId = `judge_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      
       const scoreData = {
+        judgeId, // Add the judgeId here
         judgeName,
         round: activeRound,
         categories: SCORE_CATEGORIES.map(category => ({
@@ -107,6 +111,7 @@ const JudgePanel = () => {
       
       if (feedback.trim()) {
         const feedbackData = {
+          judgeId, // Use the same judgeId for consistency
           judgeName,
           round: activeRound,
           comment: feedback,

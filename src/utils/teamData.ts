@@ -14,6 +14,7 @@ export interface ScoreCategory {
 export interface JudgeFeedback {
   judgeId: string;
   judgeName: string;
+  teamId: string;
   round: string;
   comment: string;
   timestamp: string;
@@ -41,7 +42,6 @@ export interface Team {
   imageUrl?: string;
 }
 
-// Define the judging rounds
 export const ROUNDS = [
   'Mentor Round 1',
   'Mentor Round 2',
@@ -49,7 +49,6 @@ export const ROUNDS = [
   'Final Jury Round'
 ];
 
-// Define the scoring categories and their max values
 export const SCORE_CATEGORIES = [
   { name: 'Feasibility', maxScore: 20 },
   { name: 'Originality', maxScore: 20 },
@@ -58,7 +57,6 @@ export const SCORE_CATEGORIES = [
   { name: 'Presentation', maxScore: 20 }
 ];
 
-// Mock data for teams
 export const TEAMS: Team[] = [
   {
     id: '1',
@@ -753,7 +751,6 @@ export const TEAMS: Team[] = [
   }
 ];
 
-// Helper function to get a team's average score for a specific round
 export const getTeamRoundScore = (team: Team, round: string): number => {
   const roundScores = team.scores.filter(score => score.round === round);
   if (roundScores.length === 0) return 0;
@@ -762,7 +759,6 @@ export const getTeamRoundScore = (team: Team, round: string): number => {
   return Math.round(total / roundScores.length);
 };
 
-// Helper function to get all teams sorted by their scores in a specific round
 export const getLeaderboardByRound = (round: string): Team[] => {
   return [...TEAMS].sort((a, b) => {
     const scoreA = getTeamRoundScore(a, round);
@@ -771,7 +767,6 @@ export const getLeaderboardByRound = (round: string): Team[] => {
   });
 };
 
-// Get a specific team by ID
 export const getTeamById = (id: string): Team | undefined => {
   return TEAMS.find(team => team.id === id);
 };
