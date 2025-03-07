@@ -1,4 +1,3 @@
-
 export interface TeamMember {
   id: string;
   name: string;
@@ -370,6 +369,387 @@ export const TEAMS: Team[] = [
       }
     ],
     imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '6',
+    name: 'AlphaInnovate',
+    projectName: 'ElderCare',
+    description: 'A smart home system designed specifically for elderly care, monitoring health metrics and daily activities.',
+    members: [
+      { id: '16', name: 'Oliver Matthews', role: 'IoT Developer' },
+      { id: '17', name: 'Lily Zhang', role: 'Healthcare Specialist' },
+      { id: '18', name: 'Daniel Brown', role: 'UI/UX Designer' }
+    ],
+    scores: [
+      {
+        teamId: '6',
+        round: 'Mentor Round 1',
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        categories: [
+          { name: 'Feasibility', score: 17, maxScore: 20 },
+          { name: 'Originality', score: 16, maxScore: 20 },
+          { name: 'Completeness', score: 13, maxScore: 20 },
+          { name: 'Functionality', score: 15, maxScore: 20 },
+          { name: 'Presentation', score: 16, maxScore: 20 }
+        ],
+        totalScore: 77,
+        feedback: 'Great idea with social impact. Work on implementation details and technology integration.',
+        timestamp: '2023-11-15T09:30:00Z'
+      }
+    ],
+    feedback: [
+      {
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        round: 'Mentor Round 1',
+        comment: 'The eldercare focus is noble and much needed. Think more about data privacy concerns and how to make the interface extremely simple for elderly users.',
+        timestamp: '2023-11-15T09:35:00Z'
+      }
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1631549916768-4119b4123a21?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '7',
+    name: 'NexusTeam',
+    projectName: 'FarmSmart',
+    description: 'Precision agriculture system using drones and sensors to optimize crop yields and resource usage.',
+    members: [
+      { id: '19', name: 'Aisha Patel', role: 'Agricultural Engineer' },
+      { id: '20', name: 'James Wilson', role: 'Drone Specialist' },
+      { id: '21', name: 'Eva Chen', role: 'Data Scientist' }
+    ],
+    scores: [
+      {
+        teamId: '7',
+        round: 'Mentor Round 1',
+        judgeId: 'j2',
+        judgeName: 'Prof. James Wilson',
+        categories: [
+          { name: 'Feasibility', score: 16, maxScore: 20 },
+          { name: 'Originality', score: 17, maxScore: 20 },
+          { name: 'Completeness', score: 14, maxScore: 20 },
+          { name: 'Functionality', score: 15, maxScore: 20 },
+          { name: 'Presentation', score: 18, maxScore: 20 }
+        ],
+        totalScore: 80,
+        feedback: 'Excellent societal impact with good presentation. Technical implementation needs more work.',
+        timestamp: '2023-11-15T10:15:00Z'
+      },
+      {
+        teamId: '7',
+        round: 'Mentor Round 2',
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        categories: [
+          { name: 'Feasibility', score: 17, maxScore: 20 },
+          { name: 'Originality', score: 17, maxScore: 20 },
+          { name: 'Completeness', score: 16, maxScore: 20 },
+          { name: 'Functionality', score: 16, maxScore: 20 },
+          { name: 'Presentation', score: 18, maxScore: 20 }
+        ],
+        totalScore: 84,
+        feedback: 'Clear improvement in technical implementation. The drone control interface is now much more intuitive.',
+        timestamp: '2023-11-16T13:30:00Z'
+      }
+    ],
+    feedback: [
+      {
+        judgeId: 'j2',
+        judgeName: 'Prof. James Wilson',
+        round: 'Mentor Round 1',
+        comment: 'Your approach to agricultural optimization is refreshing. Focus on making the system affordable for small farmers as well.',
+        timestamp: '2023-11-15T10:20:00Z'
+      },
+      {
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        round: 'Mentor Round 2',
+        comment: 'The data visualization for crop health is excellent. Consider adding offline functionality for areas with poor internet connectivity.',
+        timestamp: '2023-11-16T13:35:00Z'
+      }
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1574943320219-855736e8c9ff?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '8',
+    name: 'InfiniteLoop',
+    projectName: 'RecycleRight',
+    description: 'AI-powered app that identifies recyclable materials through image recognition and provides proper disposal instructions.',
+    members: [
+      { id: '22', name: 'Thomas Green', role: 'AI Specialist' },
+      { id: '23', name: 'Maria Rodriguez', role: 'Environmental Scientist' },
+      { id: '24', name: 'Kevin Wu', role: 'Mobile Developer' }
+    ],
+    scores: [
+      {
+        teamId: '8',
+        round: 'Mentor Round 1',
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        categories: [
+          { name: 'Feasibility', score: 18, maxScore: 20 },
+          { name: 'Originality', score: 15, maxScore: 20 },
+          { name: 'Completeness', score: 12, maxScore: 20 },
+          { name: 'Functionality', score: 14, maxScore: 20 },
+          { name: 'Presentation', score: 17, maxScore: 20 }
+        ],
+        totalScore: 76,
+        feedback: 'Practical idea with environmental impact. AI model needs work for better accuracy.',
+        timestamp: '2023-11-15T11:00:00Z'
+      }
+    ],
+    feedback: [
+      {
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        round: 'Mentor Round 1',
+        comment: 'The concept addresses a real need for better recycling guidance. Train your AI model on more diverse materials and lighting conditions.',
+        timestamp: '2023-11-15T11:05:00Z'
+      }
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '9',
+    name: 'DigitalNomads',
+    projectName: 'WorkWanderer',
+    description: 'Platform connecting remote workers with workspaces and communities around the world.',
+    members: [
+      { id: '25', name: 'Nina Johnson', role: 'Frontend Developer' },
+      { id: '26', name: 'David Kim', role: 'Backend Developer' },
+      { id: '27', name: 'Elena Martinez', role: 'UX Researcher' }
+    ],
+    scores: [
+      {
+        teamId: '9',
+        round: 'Mentor Round 1',
+        judgeId: 'j2',
+        judgeName: 'Prof. James Wilson',
+        categories: [
+          { name: 'Feasibility', score: 19, maxScore: 20 },
+          { name: 'Originality', score: 14, maxScore: 20 },
+          { name: 'Completeness', score: 15, maxScore: 20 },
+          { name: 'Functionality', score: 16, maxScore: 20 },
+          { name: 'Presentation', score: 17, maxScore: 20 }
+        ],
+        totalScore: 81,
+        feedback: 'Very feasible business model. Need to differentiate more from existing platforms.',
+        timestamp: '2023-11-15T12:15:00Z'
+      },
+      {
+        teamId: '9',
+        round: 'Mentor Round 2',
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        categories: [
+          { name: 'Feasibility', score: 19, maxScore: 20 },
+          { name: 'Originality', score: 16, maxScore: 20 },
+          { name: 'Completeness', score: 17, maxScore: 20 },
+          { name: 'Functionality', score: 17, maxScore: 20 },
+          { name: 'Presentation', score: 18, maxScore: 20 }
+        ],
+        totalScore: 87,
+        feedback: 'Excellent improvements in uniqueness. The community matching feature is especially promising.',
+        timestamp: '2023-11-16T14:45:00Z'
+      }
+    ],
+    feedback: [
+      {
+        judgeId: 'j2',
+        judgeName: 'Prof. James Wilson',
+        round: 'Mentor Round 1',
+        comment: 'The platform has potential but needs unique features to stand out. Consider focusing on niche communities or specific types of remote workers.',
+        timestamp: '2023-11-15T12:20:00Z'
+      },
+      {
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        round: 'Mentor Round 2',
+        comment: 'The addition of skill-sharing and local event integration greatly enhances the value proposition. The UI is also much cleaner now.',
+        timestamp: '2023-11-16T14:50:00Z'
+      }
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '10',
+    name: 'BlueWave',
+    projectName: 'OceanGuardian',
+    description: 'Autonomous marine drones for ocean cleanup and wildlife monitoring.',
+    members: [
+      { id: '28', name: 'Ryan Carter', role: 'Robotics Engineer' },
+      { id: '29', name: 'Sophia Lee', role: 'Marine Biologist' },
+      { id: '30', name: 'Michael Thompson', role: 'Control Systems Engineer' }
+    ],
+    scores: [
+      {
+        teamId: '10',
+        round: 'Mentor Round 1',
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        categories: [
+          { name: 'Feasibility', score: 15, maxScore: 20 },
+          { name: 'Originality', score: 19, maxScore: 20 },
+          { name: 'Completeness', score: 13, maxScore: 20 },
+          { name: 'Functionality', score: 14, maxScore: 20 },
+          { name: 'Presentation', score: 18, maxScore: 20 }
+        ],
+        totalScore: 79,
+        feedback: 'Highly innovative with excellent presentation. Technical challenges remain significant.',
+        timestamp: '2023-11-15T13:45:00Z'
+      }
+    ],
+    feedback: [
+      {
+        judgeId: 'j1',
+        judgeName: 'Dr. Emily Parker',
+        round: 'Mentor Round 1',
+        comment: 'The ocean cleanup concept is ambitious and necessary. Focus on power efficiency and durability in marine environments as your key technical challenges.',
+        timestamp: '2023-11-15T13:50:00Z'
+      }
+    ],
+    imageUrl: 'https://images.unsplash.com/photo-1484291470158-b8f8d608850d?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '11',
+    name: 'MindMasters',
+    projectName: 'MentalBoost',
+    description: 'Mental health app combining CBT techniques, meditation, and AI-guided therapy sessions.',
+    members: [
+      { id: '31', name: 'Jessica Patel', role: 'Psychology Specialist' },
+      { id: '32', name: 'Andrew Wilson', role: 'ML Engineer' },
+      { id: '33', name: 'Maya Johnson', role: 'Frontend Developer' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '12',
+    name: 'VisionQuest',
+    projectName: 'ARNavigate',
+    description: 'Augmented reality navigation system for indoor spaces like malls, airports, and museums.',
+    members: [
+      { id: '34', name: 'Tyler Roberts', role: 'AR Developer' },
+      { id: '35', name: 'Hannah Kim', role: '3D Modeler' },
+      { id: '36', name: 'Carlos Mendez', role: 'Backend Developer' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '13',
+    name: 'DataDynamos',
+    projectName: 'FoodTrace',
+    description: 'Blockchain-based food supply chain tracking for transparency and safety.',
+    members: [
+      { id: '37', name: 'Laura Chen', role: 'Blockchain Developer' },
+      { id: '38', name: 'Raj Sharma', role: 'Supply Chain Specialist' },
+      { id: '39', name: 'Sam Williams', role: 'UI/UX Designer' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '14',
+    name: 'EcoEnthusiasts',
+    projectName: 'SolarShare',
+    description: 'Peer-to-peer marketplace for sharing excess solar energy in local communities.',
+    members: [
+      { id: '40', name: 'Omar Hassan', role: 'Energy Systems Engineer' },
+      { id: '41', name: 'Tara Wilson', role: 'Smart Grid Specialist' },
+      { id: '42', name: 'Jin Lee', role: 'Full Stack Developer' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '15',
+    name: 'FutureMakers',
+    projectName: 'KidCode',
+    description: 'Gamified coding education platform designed specifically for elementary school students.',
+    members: [
+      { id: '43', name: 'Rebecca Thompson', role: 'Education Specialist' },
+      { id: '44', name: 'Jason Park', role: 'Game Developer' },
+      { id: '45', name: 'Olivia Martinez', role: 'Child UI Expert' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1485546246426-74dc88dec4d9?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '16',
+    name: 'HealthHackers',
+    projectName: 'VitalTrack',
+    description: 'Wearable health monitor with predictive analytics for early disease detection.',
+    members: [
+      { id: '46', name: 'Dr. Ahmed Khan', role: 'Medical Doctor' },
+      { id: '47', name: 'Linda Chen', role: 'Biomedical Engineer' },
+      { id: '48', name: 'Eric Johnson', role: 'Data Scientist' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '17',
+    name: 'SecureSolutions',
+    projectName: 'CyberShield',
+    description: 'Cybersecurity platform for small businesses using AI to detect and prevent threats.',
+    members: [
+      { id: '49', name: 'Marcus Stevens', role: 'Security Specialist' },
+      { id: '50', name: 'Priya Sharma', role: 'AI Engineer' },
+      { id: '51', name: 'Alex Turner', role: 'Frontend Developer' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '18',
+    name: 'UrbanInnovators',
+    projectName: 'ParkShare',
+    description: 'Platform for renting out private parking spaces during unused hours.',
+    members: [
+      { id: '52', name: 'Natalie Wong', role: 'Urban Planner' },
+      { id: '53', name: 'Derek Johnson', role: 'Mobile Developer' },
+      { id: '54', name: 'Zoe Garcia', role: 'Business Strategist' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '19',
+    name: 'SoundWave',
+    projectName: 'AudioLearning',
+    description: 'Audio-based educational platform for learning while commuting or exercising.',
+    members: [
+      { id: '55', name: 'Chris Zhang', role: 'Audio Engineer' },
+      { id: '56', name: 'Fatima Ali', role: 'Content Creator' },
+      { id: '57', name: 'Ben Lewis', role: 'Mobile Developer' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1000&auto=format&fit=crop'
+  },
+  {
+    id: '20',
+    name: 'GreenGrowth',
+    projectName: 'VerticalFarm',
+    description: 'IoT-controlled vertical farming system for urban food production.',
+    members: [
+      { id: '58', name: 'Emma Collins', role: 'Agricultural Engineer' },
+      { id: '59', name: 'Jamal Hassan', role: 'IoT Specialist' },
+      { id: '60', name: 'Sophie Taylor', role: 'Sustainability Expert' }
+    ],
+    scores: [],
+    feedback: [],
+    imageUrl: 'https://images.unsplash.com/photo-1601704447973-fe6b9ebb2458?q=80&w=1000&auto=format&fit=crop'
   }
 ];
 

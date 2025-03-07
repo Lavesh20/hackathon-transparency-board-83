@@ -14,6 +14,24 @@ const Index = () => {
   // Get teams for the leaderboard
   const leaderboard = getLeaderboardByRound(activeRound);
 
+  // Get cumulative score up to current round
+  const getCumulativeScore = (team, currentRound) => {
+    const roundIndex = ROUNDS.indexOf(currentRound);
+    let totalScore = 0;
+    
+    for (let i = 0; i <= roundIndex; i++) {
+      const roundScores = team.scores.filter(score => score.round === ROUNDS[i]);
+      if (roundScores.length > 0) {
+        const roundAverage = Math.round(
+          roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length
+        );
+        totalScore += roundAverage;
+      }
+    }
+    
+    return totalScore;
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -65,7 +83,8 @@ const Index = () => {
                       <th className="text-center font-medium py-3 px-4">Completeness</th>
                       <th className="text-center font-medium py-3 px-4">Functionality</th>
                       <th className="text-center font-medium py-3 px-4">Presentation</th>
-                      <th className="text-center font-medium py-3 px-4">Total</th>
+                      <th className="text-center font-medium py-3 px-4">Round Score</th>
+                      <th className="text-center font-medium py-3 px-4">Total Score</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -86,10 +105,17 @@ const Index = () => {
                           })
                         : [];
                         
-                      // Calculate total average score
-                      const totalScore = hasScoreForRound
+                      // Calculate total average score for this round
+                      const roundScore = hasScoreForRound
                         ? Math.round(roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length)
                         : 0;
+                      
+                      // Calculate cumulative score up to this round
+                      const cumulativeScore = getCumulativeScore(team, activeRound);
+                      
+                      // Calculate max possible score based on rounds completed
+                      const roundIndex = ROUNDS.indexOf(activeRound);
+                      const maxPossibleScore = (roundIndex + 1) * 100;
                       
                       const rowClass = index % 2 === 0 ? 'bg-background' : 'bg-muted/20';
                       const rankClass = index < 3 ? 'font-bold' : '';
@@ -130,9 +156,19 @@ const Index = () => {
                           )}
                           <td className="py-3 px-4 text-center">
                             {hasScoreForRound ? (
+                              <div className="font-medium">
+                                <AnimatedNumber value={roundScore} />
+                                <span className="text-xs text-muted-foreground">/100</span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">-</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            {cumulativeScore > 0 ? (
                               <div className="font-bold">
-                                <AnimatedNumber value={totalScore} />
-                                <span className="text-xs text-muted-foreground font-normal">/100</span>
+                                <AnimatedNumber value={cumulativeScore} />
+                                <span className="text-xs text-muted-foreground font-normal">/{maxPossibleScore}</span>
                               </div>
                             ) : (
                               <span className="text-muted-foreground">-</span>
