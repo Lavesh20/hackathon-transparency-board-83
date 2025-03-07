@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { ROUNDS, TEAMS, getLeaderboardByRound } from '@/utils/teamData';
+import { ROUNDS } from '@/utils/teamData';
+import { fetchTeams } from '@/utils/api';
 import Navbar from '@/components/Navbar';
 import RoundTabs from '@/components/RoundTabs';
 import { Input } from '@/components/ui/input';
@@ -8,24 +9,49 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, SlidersHorizontal } from 'lucide-react';
 import AnimatedNumber from '@/components/AnimatedNumber';
 import { Link } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
 
 const Teams = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('score');
-  const [teams, setTeams] = useState(TEAMS);
+  const [teams, setTeams] = useState([]);
+  const [filteredTeams, setFilteredTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  
+  // Fetch teams from API
+  useEffect(() => {
+    const getTeams = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchTeams();
+        setTeams(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch teams:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load teams data. Please try again.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+      }
+    };
+    
+    getTeams();
+  }, [toast]);
   
   // Update teams based on filters and sorting
   useEffect(() => {
     setLoading(true);
     
-    let filteredTeams = [...TEAMS];
+    let filtered = [...teams];
     
     // Apply search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filteredTeams = filteredTeams.filter(team => 
+      filtered = filtered.filter(team => 
         team.name.toLowerCase().includes(query) || 
         team.projectName.toLowerCase().includes(query) ||
         team.description.toLowerCase().includes(query) ||
@@ -35,18 +61,22 @@ const Teams = () => {
     
     // Apply sorting
     if (sortBy === 'score') {
-      filteredTeams = getLeaderboardByRound(activeRound);
+      filtered = [...filtered].sort((a, b) => {
+        const aScore = getCumulativeScore(a, activeRound);
+        const bScore = getCumulativeScore(b, activeRound);
+        return bScore - aScore; // Sort by score (descending)
+      });
     } else if (sortBy === 'name') {
-      filteredTeams = filteredTeams.sort((a, b) => a.name.localeCompare(b.name));
+      filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
     } else if (sortBy === 'project') {
-      filteredTeams = filteredTeams.sort((a, b) => a.projectName.localeCompare(b.projectName));
+      filtered = [...filtered].sort((a, b) => a.projectName.localeCompare(b.projectName));
     }
     
     setTimeout(() => {
-      setTeams(filteredTeams);
+      setFilteredTeams(filtered);
       setLoading(false);
     }, 300);
-  }, [searchQuery, sortBy, activeRound]);
+  }, [searchQuery, sortBy, activeRound, teams]);
 
   // Get cumulative score up to current round
   const getCumulativeScore = (team, currentRound) => {
@@ -115,7 +145,7 @@ const Teams = () => {
               <div key={i} className="h-16 bg-muted rounded-lg mb-2"></div>
             ))}
           </div>
-        ) : teams.length > 0 ? (
+        ) : filteredTeams.length > 0 ? (
           <div className="rounded-lg border overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -133,7 +163,7 @@ const Teams = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {teams.map((team, index) => {
+                  {filteredTeams.map((team, index) => {
                     const roundScores = team.scores.filter(score => score.round === activeRound);
                     const hasScoreForRound = roundScores.length > 0;
                     

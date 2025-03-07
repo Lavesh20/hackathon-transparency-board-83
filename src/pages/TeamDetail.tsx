@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Team, ROUNDS, getTeamById } from '@/utils/teamData';
+import { ROUNDS } from '@/utils/teamData';
+import { fetchTeamById } from '@/utils/api';
 import Navbar from '@/components/Navbar';
 import ScoreCard from '@/components/ScoreCard';
 import FeedbackCard from '@/components/FeedbackCard';
@@ -12,25 +12,38 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Check, Users } from 'lucide-react';
 import AnimatedNumber from '@/components/AnimatedNumber';
+import { useToast } from '@/hooks/use-toast';
 
 const TeamDetail = () => {
   const { id } = useParams<{ id: string }>();
-  const [team, setTeam] = useState<Team | null>(null);
+  const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   const [activeTab, setActiveTab] = useState('scores');
+  const { toast } = useToast();
   
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      // Simulate loading
-      setTimeout(() => {
-        const teamData = getTeamById(id);
-        setTeam(teamData || null);
-        setLoading(false);
-      }, 300);
-    }
-  }, [id]);
+    const getTeam = async () => {
+      if (id) {
+        setLoading(true);
+        try {
+          const teamData = await fetchTeamById(id);
+          setTeam(teamData);
+        } catch (error) {
+          console.error(`Failed to fetch team ${id}:`, error);
+          toast({
+            title: 'Error',
+            description: 'Failed to load team data. Please try again.',
+            variant: 'destructive',
+          });
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    
+    getTeam();
+  }, [id, toast]);
   
   if (loading) {
     return (
@@ -67,11 +80,9 @@ const TeamDetail = () => {
     );
   }
   
-  // Get the scores and feedback for the active round
   const roundScores = team.scores.filter(score => score.round === activeRound);
   const roundFeedback = team.feedback.filter(feedback => feedback.round === activeRound);
   
-  // Calculate the total score for each category across all judges in this round
   const categoryAverages = team.scores
     .filter(score => score.round === activeRound)
     .reduce((acc, score) => {
@@ -83,15 +94,13 @@ const TeamDetail = () => {
         acc[category.name].count += 1;
       });
       return acc;
-    }, {} as Record<string, { total: number; count: number }>);
+    }, {});
   
-  // Calculate the average score for this round
   const roundAverageScore = roundScores.length
     ? Math.round(roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length)
     : 0;
   
-  // Get initials for avatar
-  const getInitials = (name: string) => {
+  const getInitials = (name) => {
     return name
       .split(' ')
       .map(part => part[0])
@@ -104,14 +113,12 @@ const TeamDetail = () => {
       <Navbar />
       
       <main className="container px-4 md:px-6 pt-24 pb-16">
-        {/* Back button */}
         <Button variant="ghost" asChild className="mb-6 -ml-3">
           <Link to="/teams">
             <ArrowLeft className="mr-2 h-4 w-4" /> Back to Teams
           </Link>
         </Button>
         
-        {/* Project header */}
         <div className="space-y-6 mb-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -156,12 +163,10 @@ const TeamDetail = () => {
           </div>
         </div>
         
-        {/* Round selector */}
         <div className="mb-8">
           <RoundTabs activeRound={activeRound} onRoundChange={setActiveRound} />
         </div>
         
-        {/* Scores and Feedback tabs */}
         <div className="mb-6">
           <Tabs defaultValue="scores" onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -199,7 +204,6 @@ const TeamDetail = () => {
           </Tabs>
         </div>
         
-        {/* Category breakdown */}
         {activeTab === 'scores' && roundScores.length > 0 && (
           <div className="mt-10">
             <h3 className="text-lg font-medium mb-4">Category Breakdown</h3>

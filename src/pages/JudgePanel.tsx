@@ -1,7 +1,7 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ROUNDS, TEAMS, SCORE_CATEGORIES } from '@/utils/teamData';
+import { ROUNDS, SCORE_CATEGORIES } from '@/utils/teamData';
+import { fetchTeams, addScore, addFeedback } from '@/utils/api';
 import Navbar from '@/components/Navbar';
 import RoundTabs from '@/components/RoundTabs';
 import { Button } from '@/components/ui/button';
@@ -18,37 +18,55 @@ import { useToast } from '@/hooks/use-toast';
 const JudgePanel = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
   const [selectedTeam, setSelectedTeam] = useState('');
-  const [scores, setScores] = useState<Record<string, number>>({});
+  const [scores, setScores] = useState({});
   const [feedback, setFeedback] = useState('');
   const [judgeName, setJudgeName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   
-  // Reset scores when new team is selected
-  const handleTeamChange = (teamId: string) => {
+  useEffect(() => {
+    const getTeams = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchTeams();
+        setTeams(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch teams:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load teams data. Please try again.',
+          variant: 'destructive',
+        });
+        setLoading(false);
+      }
+    };
+    
+    getTeams();
+  }, [toast]);
+  
+  const handleTeamChange = (teamId) => {
     setSelectedTeam(teamId);
-    // Initialize scores object with default values (half of max score)
     const initialScores = SCORE_CATEGORIES.reduce((acc, category) => {
       acc[category.name] = Math.floor(category.maxScore / 2);
       return acc;
-    }, {} as Record<string, number>);
+    }, {});
     setScores(initialScores);
     setFeedback('');
   };
   
-  // Update score for a specific category
-  const handleScoreChange = (category: string, value: number[]) => {
+  const handleScoreChange = (category, value) => {
     setScores(prev => ({
       ...prev,
       [category]: value[0]
     }));
   };
   
-  // Calculate total score
   const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
   
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!selectedTeam || !judgeName) {
@@ -60,7 +78,6 @@ const JudgePanel = () => {
       return;
     }
     
-    // Validate that all categories have scores
     if (Object.keys(scores).length < SCORE_CATEGORIES.length) {
       toast({
         title: "Incomplete scores",
@@ -72,34 +89,60 @@ const JudgePanel = () => {
     
     setIsSubmitting(true);
     
-    // Simulate submitting
-    setTimeout(() => {
+    try {
+      const scoreData = {
+        judgeName,
+        round: activeRound,
+        categories: SCORE_CATEGORIES.map(category => ({
+          name: category.name,
+          score: scores[category.name],
+          maxScore: category.maxScore
+        })),
+        totalScore,
+        timestamp: new Date().toISOString()
+      };
+      
+      await addScore(selectedTeam, scoreData);
+      
+      if (feedback.trim()) {
+        const feedbackData = {
+          judgeName,
+          round: activeRound,
+          comment: feedback,
+          timestamp: new Date().toISOString()
+        };
+        
+        await addFeedback(selectedTeam, feedbackData);
+      }
+      
       toast({
         title: "Scores submitted successfully",
         description: `Your evaluation for the selected team has been recorded.`,
-        variant: "default"
       });
       
-      // Reset form
       setSelectedTeam('');
       setFeedback('');
       
-      // Initialize scores object with default values
       const initialScores = SCORE_CATEGORIES.reduce((acc, category) => {
         acc[category.name] = Math.floor(category.maxScore / 2);
         return acc;
-      }, {} as Record<string, number>);
+      }, {});
       setScores(initialScores);
-      
+    } catch (error) {
+      console.error('Error submitting score:', error);
+      toast({
+        title: "Submission failed",
+        description: "There was an error submitting your evaluation. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
       setIsSubmitting(false);
-    }, 1000);
+    }
   };
   
-  // Get selected team details
-  const team = TEAMS.find(t => t.id === selectedTeam);
+  const team = teams.find(t => t.id === selectedTeam);
   
-  // Get initials for avatar
-  const getInitials = (name: string) => {
+  const getInitials = (name) => {
     return name
       .split(' ')
       .map(part => part[0])
@@ -120,13 +163,11 @@ const JudgePanel = () => {
         
         <h1 className="text-3xl font-bold mb-6">Judge Panel</h1>
         
-        {/* Round selection */}
         <div className="mb-8">
           <RoundTabs activeRound={activeRound} onRoundChange={setActiveRound} />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Team selection */}
           <div className="lg:col-span-1">
             <Card>
               <CardHeader>
@@ -154,7 +195,7 @@ const JudgePanel = () => {
                         <SelectValue placeholder="Select a team" />
                       </SelectTrigger>
                       <SelectContent>
-                        {TEAMS.map(team => (
+                        {teams.map(team => (
                           <SelectItem key={team.id} value={team.id}>
                             {team.name} - {team.projectName}
                           </SelectItem>
@@ -166,7 +207,6 @@ const JudgePanel = () => {
               </CardContent>
             </Card>
             
-            {/* Team info card */}
             {team && (
               <Card className="mt-6 overflow-hidden">
                 <div className="h-32 overflow-hidden">
@@ -209,7 +249,6 @@ const JudgePanel = () => {
             )}
           </div>
           
-          {/* Scoring form */}
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
