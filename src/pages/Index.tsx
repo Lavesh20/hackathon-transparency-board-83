@@ -1,18 +1,49 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ROUNDS, TEAMS, getLeaderboardByRound } from '@/utils/teamData';
+import { ROUNDS } from '@/utils/teamData';
+import { fetchTeams } from '@/utils/api';
 import Navbar from '@/components/Navbar';
 import RoundTabs from '@/components/RoundTabs';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Trophy } from 'lucide-react';
 import AnimatedNumber from '@/components/AnimatedNumber';
+import { useToast } from '@/hooks/use-toast';
+import { useQuery } from '@tanstack/react-query';
 
 const Index = () => {
   const [activeRound, setActiveRound] = useState(ROUNDS[0]);
+  const { toast } = useToast();
   
-  // Get teams for the leaderboard
-  const leaderboard = getLeaderboardByRound(activeRound);
+  // Fetch teams data using React Query
+  const { data: teams = [], isLoading } = useQuery({
+    queryKey: ['teams'],
+    queryFn: async () => {
+      try {
+        return await fetchTeams();
+      } catch (error) {
+        console.error('Failed to fetch teams:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to load teams data. Using fallback data.',
+          variant: 'destructive',
+        });
+        throw error;
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+  
+  // Sort teams by score to get the leaderboard
+  const getLeaderboard = () => {
+    return [...teams].sort((a, b) => {
+      const aScore = getCumulativeScore(a, activeRound);
+      const bScore = getCumulativeScore(b, activeRound);
+      return bScore - aScore;
+    });
+  };
+  
+  const leaderboard = getLeaderboard();
 
   // Get cumulative score up to current round
   const getCumulativeScore = (team, currentRound) => {
@@ -88,95 +119,118 @@ const Index = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {leaderboard.map((team, index) => {
-                      const roundScores = team.scores.filter(score => score.round === activeRound);
-                      const hasScoreForRound = roundScores.length > 0;
-                      
-                      // Calculate average scores for each category
-                      const categoryScores = hasScoreForRound
-                        ? team.scores[0].categories.map(cat => {
-                            const scores = roundScores.map(score => 
-                              score.categories.find(c => c.name === cat.name)?.score || 0
-                            );
-                            return {
-                              name: cat.name,
-                              average: Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
-                            };
-                          })
-                        : [];
-                        
-                      // Calculate total average score for this round
-                      const roundScore = hasScoreForRound
-                        ? Math.round(roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length)
-                        : 0;
-                      
-                      // Calculate cumulative score up to this round
-                      const cumulativeScore = getCumulativeScore(team, activeRound);
-                      
-                      // Calculate max possible score based on rounds completed
-                      const roundIndex = ROUNDS.indexOf(activeRound);
-                      const maxPossibleScore = (roundIndex + 1) * 100;
-                      
-                      const rowClass = index % 2 === 0 ? 'bg-background' : 'bg-muted/20';
-                      const rankClass = index < 3 ? 'font-bold' : '';
-                      
-                      return (
-                        <tr key={team.id} className={`${rowClass} hover:bg-muted/30 transition-colors`}>
-                          <td className={`py-3 px-4 ${rankClass}`}>
-                            {index < 3 ? (
-                              <div className="flex items-center justify-center rounded-full w-6 h-6 text-xs bg-primary/10 text-primary">
-                                {index + 1}
-                              </div>
-                            ) : (
-                              <span>{index + 1}</span>
-                            )}
-                          </td>
-                          <td className="py-3 px-4">
-                            <Link to={`/teams/${team.id}`} className="hover:underline">
-                              <div>
-                                <div className="font-medium">{team.name}</div>
-                                <div className="text-xs text-muted-foreground">{team.projectName}</div>
-                              </div>
-                            </Link>
-                          </td>
-                          {hasScoreForRound ? (
-                            categoryScores.map(cat => (
-                              <td key={cat.name} className="py-3 px-4 text-center">
-                                <AnimatedNumber value={cat.average} className="font-medium" />
-                              </td>
-                            ))
-                          ) : (
-                            <>
-                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
-                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
-                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
-                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
-                              <td className="py-3 px-4 text-center text-muted-foreground">-</td>
-                            </>
-                          )}
-                          <td className="py-3 px-4 text-center">
-                            {hasScoreForRound ? (
-                              <div className="font-medium">
-                                <AnimatedNumber value={roundScore} />
-                                <span className="text-xs text-muted-foreground">/100</span>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                          </td>
-                          <td className="py-3 px-4 text-center">
-                            {cumulativeScore > 0 ? (
-                              <div className="font-bold">
-                                <AnimatedNumber value={cumulativeScore} />
-                                <span className="text-xs text-muted-foreground font-normal">/{maxPossibleScore}</span>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground">-</span>
-                            )}
-                          </td>
+                    {isLoading ? (
+                      // Loading state
+                      Array(5).fill(0).map((_, index) => (
+                        <tr key={`loading-${index}`} className="animate-pulse">
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
+                          <td className="py-3 px-4"><div className="h-6 bg-muted rounded"></div></td>
                         </tr>
-                      );
-                    })}
+                      ))
+                    ) : leaderboard.length > 0 ? (
+                      leaderboard.map((team, index) => {
+                        const roundScores = team.scores.filter(score => score.round === activeRound);
+                        const hasScoreForRound = roundScores.length > 0;
+                        
+                        // Calculate average scores for each category
+                        const categoryScores = hasScoreForRound
+                          ? team.scores[0].categories.map(cat => {
+                              const scores = roundScores.map(score => 
+                                score.categories.find(c => c.name === cat.name)?.score || 0
+                              );
+                              return {
+                                name: cat.name,
+                                average: Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length)
+                              };
+                            })
+                          : [];
+                          
+                        // Calculate total average score for this round
+                        const roundScore = hasScoreForRound
+                          ? Math.round(roundScores.reduce((sum, score) => sum + score.totalScore, 0) / roundScores.length)
+                          : 0;
+                        
+                        // Calculate cumulative score up to this round
+                        const cumulativeScore = getCumulativeScore(team, activeRound);
+                        
+                        // Calculate max possible score based on rounds completed
+                        const roundIndex = ROUNDS.indexOf(activeRound);
+                        const maxPossibleScore = (roundIndex + 1) * 100;
+                        
+                        const rowClass = index % 2 === 0 ? 'bg-background' : 'bg-muted/20';
+                        const rankClass = index < 3 ? 'font-bold' : '';
+                        
+                        return (
+                          <tr key={team.id} className={`${rowClass} hover:bg-muted/30 transition-colors`}>
+                            <td className={`py-3 px-4 ${rankClass}`}>
+                              {index < 3 ? (
+                                <div className="flex items-center justify-center rounded-full w-6 h-6 text-xs bg-primary/10 text-primary">
+                                  {index + 1}
+                                </div>
+                              ) : (
+                                <span>{index + 1}</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4">
+                              <Link to={`/teams/${team.id}`} className="hover:underline">
+                                <div>
+                                  <div className="font-medium">{team.name}</div>
+                                  <div className="text-xs text-muted-foreground">{team.projectName}</div>
+                                </div>
+                              </Link>
+                            </td>
+                            {hasScoreForRound ? (
+                              categoryScores.map(cat => (
+                                <td key={cat.name} className="py-3 px-4 text-center">
+                                  <AnimatedNumber value={cat.average} className="font-medium" />
+                                </td>
+                              ))
+                            ) : (
+                              <>
+                                <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                                <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                                <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                                <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                                <td className="py-3 px-4 text-center text-muted-foreground">-</td>
+                              </>
+                            )}
+                            <td className="py-3 px-4 text-center">
+                              {hasScoreForRound ? (
+                                <div className="font-medium">
+                                  <AnimatedNumber value={roundScore} />
+                                  <span className="text-xs text-muted-foreground">/100</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-center">
+                              {cumulativeScore > 0 ? (
+                                <div className="font-bold">
+                                  <AnimatedNumber value={cumulativeScore} />
+                                  <span className="text-xs text-muted-foreground font-normal">/{maxPossibleScore}</span>
+                                </div>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={9} className="text-center py-6 text-muted-foreground">
+                          No teams data available
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
