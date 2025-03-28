@@ -72,7 +72,7 @@ const Index = () => {
         {/* Hero section */}
         <section className="mb-16 text-center space-y-4 animate-fade-up">
           <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-            Hackathon Transparency Board
+            Hackathon LeaderBoard
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Track team progress, judge scores, and feedback across all rounds to ensure
